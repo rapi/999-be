@@ -5,10 +5,12 @@ import { CategoriesController } from './categories/categories.controller';
 import { CategoriesService } from './categories/categories.service';
 import { PageController } from './page/page.controller';
 import { PageService } from './page/page.service';
+import { ItemController } from './item/item.controller';
+import { ItemService } from './item/item.service';
 
 @Module({
   imports: [],
-  controllers: [AppController, CategoriesController, PageController],
-  providers: [AppService, CategoriesService, PageService],
+  controllers: [AppController, CategoriesController, PageController, ItemController],
+  providers: [AppService, CategoriesService, PageService, ItemService],
 })
 export class AppModule {}
