@@ -5,7 +5,9 @@ import { PageService } from './page.service';
 export class PageController {
   constructor(private readonly pageService: PageService) {}
   @Get()
-  public getPage(@Query('link') link) {
-    return this.pageService.getPage(link);
+  public getPage(@Query('link') link, @Query('linkBase64') linkBase64) {
+    return this.pageService.getPage(
+      linkBase64 ? Buffer.from(linkBase64, 'base64').toString() : link,
+    );
   }
 }
