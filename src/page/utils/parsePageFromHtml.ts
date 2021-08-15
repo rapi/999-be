@@ -15,7 +15,6 @@ export default (html: string): IPageItem[] => {
       price: parseInt(price.replace(/[^0-9]/g, '')),
       noPrice: price.replace(/[0-9]/g, '').trim() === 'Договорная',
       currency: price.replace(/[0-9]/g, '').trim(),
-      // .replace(/ /g, ''),
       img: [
         $(this)
           .find('img')

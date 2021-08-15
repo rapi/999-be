@@ -6,7 +6,10 @@ import { IPageItem } from './IPageItem';
 @Injectable()
 export class PageService {
   public async getPage(link: string): Promise<IPageItem[]> {
-    const { data } = await axios.get(`https://999.md${link}?view_type=detail`);
+    const path = link.includes('?')
+      ? `${link}&view_type=detail`
+      : `${link}?view_type=detail`;
+    const { data } = await axios.get(`https://999.md${path}`);
     return parsePageFromHtml(data);
   }
 }
