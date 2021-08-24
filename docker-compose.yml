@@ -5,6 +5,6 @@ services:
     image: rapiok/999:latest
     restart: always
     ports:
-      - "9000:3000"
+      - "10000:3000"
 
 
