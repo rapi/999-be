@@ -5,8 +5,7 @@ RUN apk add g++ make python3 python
 
 COPY package*.json ./
 
-RUN npm i rimraf -g
-RUN npm install --only=development
+RUN npm ci
 
 COPY . .
 
@@ -21,7 +20,7 @@ WORKDIR /usr/src/app
 
 COPY package*.json ./
 
-RUN npm install --only=production
+RUN npm ci
 
 COPY . .
 
