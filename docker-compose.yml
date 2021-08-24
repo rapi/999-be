@@ -2,7 +2,7 @@ version: "3.1"
 services:
 
   parser:
-    image: rapiok/999:latest
+    build: .
     restart: always
     ports:
       - "10000:3000"
