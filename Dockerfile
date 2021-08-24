@@ -5,6 +5,7 @@ RUN apk add g++ make python3 python
 
 COPY package*.json ./
 
+RUN npm i rimraf -g
 RUN npm install --only=development
 
 COPY . .
