@@ -1,6 +1,7 @@
 FROM node:12.13-alpine As development
 
 WORKDIR /usr/src/app
+RUN apk add g++ make python3 python
 
 COPY package*.json ./
 
