@@ -7,9 +7,10 @@ import { PageController } from './page/page.controller';
 import { PageService } from './page/page.service';
 import { ItemController } from './item/item.controller';
 import { ItemService } from './item/item.service';
+import { SuggestionsModule } from './suggestions/suggestions.module';
 
 @Module({
-  imports: [],
+  imports: [SuggestionsModule],
   controllers: [AppController, CategoriesController, PageController, ItemController],
   providers: [AppService, CategoriesService, PageService, ItemService],
 })

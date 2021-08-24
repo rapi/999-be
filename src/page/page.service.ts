@@ -9,7 +9,7 @@ export class PageService {
     const path = link.includes('?')
       ? `${link}&view_type=detail`
       : `${link}?view_type=detail`;
-    const { data } = await axios.get(`https://999.md${path}`);
+    const { data } = await axios.get(encodeURI(`https://999.md${path}`));
     return parsePageFromHtml(data);
   }
 }
