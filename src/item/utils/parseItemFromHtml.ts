@@ -42,6 +42,9 @@ export default (html: string): IItem => {
   );
   return {
     link: $('link[hreflang="ru"]').attr('href'),
+    userMarkCount: parseFloat($('[itemprop="ratingCount"]').attr('content')),
+    userMark: parseFloat($('[itemprop="ratingValue"]').text()),
+    user: $('.adPage__aside__stats__owner a').attr('href'),
     title: $('.adPage__header').text().trim(),
     description: $('.adPage__content__description').text().trim(),
     views: parseInt(views[0]),

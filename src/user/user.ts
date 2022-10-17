@@ -1,9 +1,7 @@
-export type IItem = {
+export type User = {
   link: string;
   title: string;
   user: string;
-  userMark: number;
-  userMarkCount: number;
   description: string;
   views: number;
   viewsToday: number;

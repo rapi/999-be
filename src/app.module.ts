@@ -8,10 +8,24 @@ import { PageService } from './page/page.service';
 import { ItemController } from './item/item.controller';
 import { ItemService } from './item/item.service';
 import { SuggestionsModule } from './suggestions/suggestions.module';
+import { UserController } from './user/user.controller';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [SuggestionsModule],
-  controllers: [AppController, CategoriesController, PageController, ItemController],
-  providers: [AppService, CategoriesService, PageService, ItemService],
+  controllers: [
+    AppController,
+    CategoriesController,
+    PageController,
+    ItemController,
+    UserController,
+  ],
+  providers: [
+    AppService,
+    CategoriesService,
+    PageService,
+    ItemService,
+    UserService,
+  ],
 })
 export class AppModule {}
