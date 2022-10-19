@@ -1,7 +1,7 @@
 import axios from 'axios';
 jest.setTimeout(1000000);
 describe('ItemController', () => {
-  it('should be defined', async () => {
+  it('should be defined', () => {
     // const ads = {};
     // for (let i = 1; i < 10; i++) {
     //   const data = await fetch(
