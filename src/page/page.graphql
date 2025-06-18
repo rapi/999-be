@@ -1,0 +1,226 @@
+query SearchAds($input: Ads_SearchInput!, $isWorkCategory: Boolean = false, $includeCarsFeatures: Boolean = false, $includeBody: Boolean = false, $includeOwner: Boolean = false, $includeBoost: Boolean = false, $locale: Common_Locale) {
+    searchAds(input: $input) {
+        ads {
+            ...AdsSearchFragment
+            __typename
+        }
+        count
+        __typename
+    }
+}
+
+fragment AdsSearchFragment on Advert {
+    ...AdListFragment
+    ...WorkCategoryFeatures @include(if: $isWorkCategory)
+    reseted(
+        input: {format: "2 Jan. 2006, 15:04", locale: $locale, timezone: "Europe/Chisinau", getDiff: false}
+    )
+    __typename
+}
+
+fragment AdListFragment on Advert {
+    id
+    title
+    subCategory {
+        ...CategoryAdFragment
+        __typename
+    }
+    ...PriceAndImages
+    ...CarsFeatures @include(if: $includeCarsFeatures)
+    ...AdvertOwner @include(if: $includeOwner)
+    transportYear: feature(id: 19) {
+        ...FeatureValueFragment
+        __typename
+    }
+    realEstate: feature(id: 795) {
+        ...FeatureValueFragment
+        __typename
+    }
+    body: feature(id: 13) @include(if: $includeBody) {
+        ...FeatureValueFragment
+        __typename
+    }
+    ...AdvertBooster @include(if: $includeBoost)
+    label: displayProduct(alias: LABEL) {
+        ... on DisplayLabel {
+            enable
+            ...DisplayLabelFragment
+            __typename
+        }
+        __typename
+    }
+    frame: displayProduct(alias: FRAME) {
+        ... on DisplayFrame {
+            enable
+            __typename
+        }
+        __typename
+    }
+    animation: displayProduct(alias: ANIMATION) {
+        ... on DisplayAnimation {
+            enable
+            __typename
+        }
+        __typename
+    }
+    animationAndFrame: displayProduct(alias: ANIMATION_AND_FRAME) {
+        ... on DisplayAnimationAndFrame {
+            enable
+            __typename
+        }
+        __typename
+    }
+    __typename
+}
+
+fragment CategoryAdFragment on Category {
+    id
+    title {
+        ...TranslationFragment
+        __typename
+    }
+    parent {
+        id
+        title {
+            ...TranslationFragment
+            __typename
+        }
+        parent {
+            id
+            title {
+                ...TranslationFragment
+                __typename
+            }
+            __typename
+        }
+        __typename
+    }
+    __typename
+}
+
+fragment TranslationFragment on I18NTr {
+    translated
+    __typename
+}
+
+fragment PriceAndImages on Advert {
+    price: feature(id: 2) {
+        ...FeatureValueFragment
+        __typename
+    }
+    pricePerMeter: feature(id: 1385) {
+        ...FeatureValueFragment
+        __typename
+    }
+    images: feature(id: 14) {
+        ...FeatureValueFragment
+        __typename
+    }
+    __typename
+}
+
+fragment FeatureValueFragment on FeatureValue {
+    id
+    type
+    value
+    __typename
+}
+
+fragment CarsFeatures on Advert {
+    carFuel: feature(id: 151) {
+        ...FeatureValueFragment
+        __typename
+    }
+    carDrive: feature(id: 108) {
+        ...FeatureValueFragment
+        __typename
+    }
+    carTransmission: feature(id: 101) {
+        ...FeatureValueFragment
+        __typename
+    }
+    mileage: feature(id: 104) {
+        ...FeatureValueFragment
+        __typename
+    }
+    engineVolume: feature(id: 103) {
+        ...FeatureValueFragment
+        __typename
+    }
+    __typename
+}
+
+fragment AdvertOwner on Advert {
+    owner {
+        id
+        business {
+            plan
+            __typename
+        }
+        __typename
+    }
+    __typename
+}
+
+fragment AdvertBooster on Advert {
+    booster: product(alias: BOOSTER) {
+        enable
+        __typename
+    }
+    __typename
+}
+
+fragment DisplayLabelFragment on DisplayLabel {
+    title
+    color {
+        ...ColorFragment
+        __typename
+    }
+    gradient {
+        ...GradientFragment
+        __typename
+    }
+    __typename
+}
+
+fragment ColorFragment on Common_Color {
+    r
+    g
+    b
+    a
+    __typename
+}
+
+fragment GradientFragment on Gradient {
+    from {
+        ...ColorFragment
+        __typename
+    }
+    to {
+        ...ColorFragment
+        __typename
+    }
+    position
+    rotation
+    __typename
+}
+
+fragment WorkCategoryFeatures on Advert {
+    salary: feature(id: 266) {
+        ...FeatureValueFragment
+        __typename
+    }
+    workSchedule: feature(id: 260) {
+        ...FeatureValueFragment
+        __typename
+    }
+    workExperience: feature(id: 263) {
+        ...FeatureValueFragment
+        __typename
+    }
+    education: feature(id: 261) {
+        ...FeatureValueFragment
+        __typename
+    }
+    __typename
+}

@@ -4,10 +4,9 @@ import { IPageItem } from '../IPageItem';
 export default (html: string): IPageItem[] => {
   const $ = load(html);
   const result = [];
-
-  $('.ads-list-detail-item').each(function () {
+  $('[data-sentry-component="AdDetail"] a').each(function () {
     const price = $(this).find('.ads-list-detail-item-price').text();
-
+    console.log('test');
     result.push({
       link: $(this).find('a').first().attr('href'),
       title: $(this).find('.ads-list-detail-item-title ').first().text().trim(),

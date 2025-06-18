@@ -40,11 +40,13 @@ export default (html: string): IItem => {
   const price = $('.adPage__content__price-feature__prices__price__value').attr(
     'content',
   );
-  return {
+  const obj = {
     link: $('link[hreflang="ru"]').attr('href'),
     userMarkCount: parseFloat($('[itemprop="ratingCount"]').attr('content')),
     userMark: parseFloat($('[itemprop="ratingValue"]').text()),
-    user: $('.adPage__aside__stats__owner a').attr('href'),
+    user: $(
+      '.adPage__aside__stats__owner a.adPage__aside__stats__owner__login',
+    ).attr('href'),
     title: $('.adPage__header').text().trim(),
     description: $('.adPage__content__description').text().trim(),
     views: parseInt(views[0]),
@@ -56,4 +58,6 @@ export default (html: string): IItem => {
     secondaryFeatures,
     location,
   };
+  console.log(obj);
+  return obj;
 };

@@ -1,0 +1,28 @@
+query ReviewsTopic($input: Reviews_GetTopicRequestInput!) {
+  reviewsTopic(input: $input) {
+    id
+    reviewsStats {
+      median
+      count
+      histogram {
+        value
+        key
+        __typename
+      }
+      mean
+      __typename
+    }
+    currentUserReview {
+      status
+      __typename
+    }
+    reviewer {
+      isBlocked
+      isPostingLimited
+      isDisabled
+      __typename
+    }
+    isDisabled
+    __typename
+  }
+}

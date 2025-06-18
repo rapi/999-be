@@ -10,6 +10,8 @@ import { ItemService } from './item/item.service';
 import { SuggestionsModule } from './suggestions/suggestions.module';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
+import { ReviewController } from './review/review.controller';
+import { ReviewService } from './review/review.service';
 
 @Module({
   imports: [SuggestionsModule],
@@ -17,6 +19,7 @@ import { UserService } from './user/user.service';
     AppController,
     CategoriesController,
     PageController,
+    ReviewController,
     ItemController,
     UserController,
   ],
@@ -24,6 +27,7 @@ import { UserService } from './user/user.service';
     AppService,
     CategoriesService,
     PageService,
+    ReviewService,
     ItemService,
     UserService,
   ],
