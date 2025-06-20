@@ -8,6 +8,7 @@ RUN apk add --no-cache g++ make python3
 
 # copy only manifest + lockfile for max layer reuse
 COPY package.json yarn.lock ./
+COPY .env  ./
 
 # install all deps
 RUN yarn install --frozen-lockfile
@@ -28,6 +29,7 @@ WORKDIR /usr/src/app
 
 # copy manifest + lockfile
 COPY package.json yarn.lock ./
+COPY .env ./
 
 # install only production deps
 RUN yarn install --production --frozen-lockfile
