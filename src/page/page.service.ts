@@ -2,11 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { IPageItem } from './IPageItem';
 import axios from 'axios';
 import * as fs from 'node:fs';
+import * as path from 'path';
 
 @Injectable()
 export class PageService {
   public async getPage(categoryId: string): Promise<IPageItem[]> {
-    const query = fs.readFileSync('./src/page/page.graphql', 'utf8');
+    const query = fs.readFileSync(
+      path.join(process.cwd(), 'src', 'page', 'page.graphql'),
+      'utf8',
+    );
     const data = await axios.post(
       'https://999.md/graphql',
       {
