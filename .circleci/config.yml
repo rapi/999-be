@@ -42,21 +42,20 @@ jobs:
             docker push "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest"
 
       # deploy: SSH into server, pull new image, recreate container
-#      - run:
-#          name: Deploy to server
-#          command: |
-#            ssh -o StrictHostKeyChecking=no ${DEPLOY_HOST} \<< 'EOF'
-#              docker pull ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
-#              # stop & remove old container if exists
-#              docker stop ${IMAGE_NAME}  || true
-#              docker rm   ${IMAGE_NAME}  || true
-#              # run new container with .env
-#              docker run -d \
-#                --env-file /home/$(whoami)/repo/.env \
-#                --name ${IMAGE_NAME} \
-#                -p 80:3000 \
-#                ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
-#            EOF
+      - run:
+          name: Deploy to server
+          command: |
+            ssh -o StrictHostKeyChecking=no ${DEPLOY_HOST} \<< 'EOF'
+              docker pull ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
+              # stop & remove old container if exists
+              docker stop ${IMAGE_NAME}  || true
+              docker rm   ${IMAGE_NAME}  || true
+              # run new container with .env
+              docker run -d \
+                --name ${IMAGE_NAME} \
+                -p 80:3000 \
+                ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
+            EOF
 
 workflows:
   version: 2
