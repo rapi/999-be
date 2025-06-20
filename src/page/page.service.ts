@@ -8,7 +8,7 @@ import * as path from 'path';
 export class PageService {
   public async getPage(categoryId: string): Promise<IPageItem[]> {
     const query = fs.readFileSync(
-      path.join('graphql', 'page.graphql'), // <- relative to the .js file
+      path.join(process.cwd(), 'graphql', 'page.graphql'), // <- relative to the .js file
       'utf8',
     );
     const data = await axios.post(
