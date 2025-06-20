@@ -22,14 +22,18 @@
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/schedule": "^6.0.0",
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.10",
+    "dotenv": "^16.5.0",
     "js-base64": "^3.6.1",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "telegraf": "^4.16.3"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

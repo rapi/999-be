@@ -12,9 +12,16 @@ import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
 import { ReviewController } from './review/review.controller';
 import { ReviewService } from './review/review.service';
+import { SubscribeController } from './subscribe/subscribe.controller';
+import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
-  imports: [SuggestionsModule],
+  imports: [
+    SuggestionsModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
+  ],
   controllers: [
     AppController,
     CategoriesController,
@@ -22,6 +29,7 @@ import { ReviewService } from './review/review.service';
     ReviewController,
     ItemController,
     UserController,
+    SubscribeController,
   ],
   providers: [
     AppService,

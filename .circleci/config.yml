@@ -1,0 +1,68 @@
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/base:stable  # or any docker-with-cli image
+    working_directory: ~/repo
+    resource_class: small
+
+jobs:
+  build-and-deploy:
+    executor: docker-executor
+    steps:
+      - checkout
+
+      # enable docker commands
+      - setup_remote_docker:
+          docker_layer_caching: true
+
+      # write Telegram vars into .env at repository root
+      - run:
+          name: Create .env
+          command: |
+            echo "TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}" > .env
+
+      # build & tag image
+      - run:
+          name: Build Docker image
+          command: |
+            docker build -t "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}" .
+
+      # log in to Docker Hub
+      - run:
+          name: Login to Docker Hub
+          command: |
+            echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+
+      # push to Docker Hub
+      - run:
+          name: Push Docker image
+          command: |
+            docker push "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}"
+
+      # deploy: SSH into server, pull new image, recreate container
+      - run:
+          name: Deploy to server
+          command: |
+            ssh -o StrictHostKeyChecking=no ${DEPLOY_HOST} << 'EOF'
+              docker pull ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}
+              # stop & remove old container if exists
+              docker stop ${IMAGE_NAME}  || true
+              docker rm   ${IMAGE_NAME}  || true
+              # run new container with .env
+              docker run -d \
+                --env-file /home/$(whoami)/repo/.env \
+                --name ${IMAGE_NAME} \
+                -p 80:3000 \
+                ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}
+            EOF
+
+workflows:
+  version: 2
+  deploy_workflow:
+    jobs:
+      - build-and-deploy:
+          filters:
+            branches:
+              only: main
