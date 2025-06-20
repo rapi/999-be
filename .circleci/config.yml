@@ -45,7 +45,7 @@ jobs:
       - run:
           name: Deploy to server
           command: |
-            ssh -o StrictHostKeyChecking=no ${DEPLOY_HOST} << 'EOF'
+            ssh -o StrictHostKeyChecking=no ${DEPLOY_HOST} \<< 'EOF'
               docker pull ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}
               # stop & remove old container if exists
               docker stop ${IMAGE_NAME}  || true
