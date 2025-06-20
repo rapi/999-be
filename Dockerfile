@@ -26,9 +26,6 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /usr/src/app
 
-# install Yarn so we can install prod deps
-RUN npm install -g yarn
-
 # copy manifest + lockfile
 COPY package.json yarn.lock ./
 
