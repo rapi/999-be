@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            docker build -t "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}" .
+            docker build -t "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest" .
 
       # log in to Docker Hub
       - run:
@@ -39,14 +39,14 @@ jobs:
       - run:
           name: Push Docker image
           command: |
-            docker push "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}"
+            docker push "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest"
 
       # deploy: SSH into server, pull new image, recreate container
       - run:
           name: Deploy to server
           command: |
             ssh -o StrictHostKeyChecking=no ${DEPLOY_HOST} \<< 'EOF'
-              docker pull ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}
+              docker pull ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
               # stop & remove old container if exists
               docker stop ${IMAGE_NAME}  || true
               docker rm   ${IMAGE_NAME}  || true
@@ -55,7 +55,7 @@ jobs:
                 --env-file /home/$(whoami)/repo/.env \
                 --name ${IMAGE_NAME} \
                 -p 80:3000 \
-                ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${CIRCLE_SHA1}
+                ${DOCKERHUB_USERNAME}/${IMAGE_NAME}:latest
             EOF
 
 workflows:
