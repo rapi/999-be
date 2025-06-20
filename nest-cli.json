@@ -1,6 +1,6 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "assets": ["src/page/**/*.graphql"]
+  "assets": ["src/page/**/*.graphql"],
   "watchAssets": true
 }
