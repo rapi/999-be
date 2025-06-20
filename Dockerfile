@@ -4,8 +4,7 @@ FROM node:22-alpine AS development
 WORKDIR /usr/src/app
 
 # install build tools and Yarn
-RUN apk add --no-cache g++ make python3 \
-    && npm install -g yarn
+RUN apk add --no-cache g++ make python3
 
 # copy only manifest + lockfile for max layer reuse
 COPY package.json yarn.lock ./
