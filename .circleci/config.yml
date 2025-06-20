@@ -49,7 +49,7 @@ jobs:
       - run:
           name: Deploy to server
           command: |
-            ssh -o StrictHostKeyChecking=no root@$VPS_HOST \
+            ssh -o StrictHostKeyChecking=no root@$DEPLOY_HOST \
              "docker pull $DOCKERHUB_USERNAME/999:latest && \
               if [ \$(docker ps -aq -f name=999) ]; then docker stop 999 && docker rm 999; fi && \
               docker run -d --name 999 $DOCKERHUB_USERNAME/999:latest && \
