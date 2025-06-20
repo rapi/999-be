@@ -11,6 +11,7 @@ export class PageService {
       path.join(process.cwd(), 'graphql', 'page.graphql'), // <- relative to the .js file
       'utf8',
     );
+    console.log('query', query);
     const data = await axios.post(
       'https://999.md/graphql',
       {
