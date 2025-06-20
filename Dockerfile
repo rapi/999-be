@@ -36,6 +36,7 @@ RUN yarn install --production --frozen-lockfile
 
 # pull in our build output
 COPY --from=development /usr/src/app/dist ./dist
+COPY --from=development /usr/src/app/graphql ./
 
 # run!
 CMD ["node", "dist/main"]
