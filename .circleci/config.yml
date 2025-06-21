@@ -52,7 +52,7 @@ jobs:
             ssh -o StrictHostKeyChecking=no root@$DEPLOY_HOST \
              "docker pull $DOCKERHUB_USERNAME/999:latest && \
               if [ \$(docker ps -aq -f name=999) ]; then docker stop 999 && docker rm 999; fi && \
-              docker run -d --name 999 $DOCKERHUB_USERNAME/999:latest -v /root/cache:/usr/src/app/cache && \
+              docker run  -v /root/cache:/usr/src/app/cache -d --name 999 $DOCKERHUB_USERNAME/999:latest && \
               echo 'y' | docker image prune"
 
 
