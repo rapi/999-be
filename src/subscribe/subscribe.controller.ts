@@ -45,6 +45,61 @@ export class SubscribeController implements OnModuleInit {
   }
 
   onModuleInit() {
+    // this.bot.on('text', (ctx) => {
+    //   if (ctx.message.text.startsWith('/')) {
+    //     return ctx.reply('Unknown command. Try /subscribe <link>.');
+    //   }
+    // });
+    this.info();
+    this.subscribe();
+    this.filter();
+    this.scan();
+    this.bot
+      .launch()
+      .then(() => this.logger.log('Telegram bot launched'))
+      .catch((err) => this.logger.error('Failed to launch bot', err));
+    this.handleCronEveryMinute();
+  }
+  @Cron('*/1 * * * *')
+  async handleCronEveryMinute() {
+    this.logger.debug('🔄 Running scheduled task: handleCronEveryMinute');
+    const subscription = JSON.parse(
+      fs.readFileSync(subsFile, { encoding: 'utf-8' }),
+    );
+    for (const chatId in subscription) {
+      const oldAds = JSON.parse(
+        fs.readFileSync(cacheDir + '/' + chatId + '.json', 'utf-8'),
+      );
+      const oldAddsLinks = Object.keys(oldAds);
+      const sub = subscription[chatId];
+      const { link, filter } = sub;
+      this.logger.debug(`Checking subscription for chat ${chatId}: ${link}`);
+      const adds = await this.pageService.getPage(
+        filter.subCategoryId,
+        filter.filters,
+      );
+      const addsMap = Object.fromEntries(adds.map((item) => [item.link, item]));
+
+      const newAds = adds.filter((item) => !oldAddsLinks.includes(item.link));
+      fs.writeFileSync(
+        cacheDir + '/' + chatId + '.json',
+        JSON.stringify({ ...addsMap, ...oldAds }),
+        'utf-8',
+      );
+      this.logger.debug(`New adds found for chat ${chatId}: ${newAds.length}`);
+
+      if (newAds.length > 0) {
+        for (const sub of newAds) {
+          try {
+            await this.bot.telegram.sendMessage(chatId, sub.link);
+          } catch (e) {
+            this.logger.error(e);
+          }
+        }
+      }
+    }
+  }
+  subscribe = async (): Promise<void> => {
     this.bot.command('subscribe', async (ctx) => {
       const parts = ctx.message.text.trim().split(/\s+/);
       if (parts.length < 2) {
@@ -88,47 +143,53 @@ export class SubscribeController implements OnModuleInit {
         `✅ Subscribed chat ${chatId} to:\n${decoded}, on the page ${adds.length} adds found.`,
       );
     });
-
-    this.bot.on('text', (ctx) => {
-      if (ctx.message.text.startsWith('/')) {
-        return ctx.reply('Unknown command. Try /subscribe <link>.');
+  };
+  filter = async (): Promise<void> => {
+    this.bot.command('filter', async (ctx) => {
+      const parts = ctx.message.text.trim().split(/\s+/);
+      if (parts.length < 2) {
+        return ctx.reply('❗ Usage: /filter {}');
       }
-    });
 
-    this.bot
-      .launch()
-      .then(() => this.logger.log('Telegram bot launched'))
-      .catch((err) => this.logger.error('Failed to launch bot', err));
-    this.handleCronEveryMinute();
-  }
-  @Cron('*/1 * * * *')
-  async handleCronEveryMinute() {
-    this.logger.debug('🔄 Running scheduled task: handleCronEveryMinute');
-    const subscription = JSON.parse(
-      fs.readFileSync(subsFile, { encoding: 'utf-8' }),
-    );
-    for (const chatId in subscription) {
-      const oldAds = JSON.parse(
-        fs.readFileSync(cacheDir + '/' + chatId + '.json', 'utf-8'),
+      const rawFilter = parts[1];
+      let filters;
+      try {
+        filters = JSON.parse(ctx.message.text.trim().replace('/filter', ''));
+      } catch (e) {
+        return ctx.reply(`❗Wrong filter format, use /filter`);
+      }
+      const chatId = ctx.chat.id;
+      this.logger.debug(
+        `Checking subscription for chat ${chatId}: ${rawFilter}`,
       );
-      const oldAddsLinks = Object.keys(oldAds);
-      const sub = subscription[chatId];
-      const { link, filter } = sub;
-      this.logger.debug(`Checking subscription for chat ${chatId}: ${link}`);
-      const adds = await this.pageService.getPage(filter.subCategoryId);
-      const addsMap = Object.fromEntries(adds.map((item) => [item.link, item]));
-
-      const newAds = adds.filter((item) => !oldAddsLinks.includes(item.link));
+      const subscriptions = JSON.parse(fs.readFileSync(subsFile, 'utf-8'));
       fs.writeFileSync(
-        cacheDir + '/' + chatId + '.json',
-        JSON.stringify({ ...addsMap, ...oldAds }),
-        'utf-8',
+        subsFile,
+        JSON.stringify({
+          ...subscriptions,
+          [chatId]: {
+            ...subscriptions[chatId],
+            filter: {
+              ...subscriptions[chatId].filter,
+              filters,
+            },
+          },
+        }),
+        'utf8',
       );
-      if (newAds.length > 0) {
-        for (const sub of newAds) {
-          this.bot.telegram.sendMessage(chatId, sub.link);
-        }
-      }
-    }
-  }
+      return ctx.reply(`✅ Chanhed filter to chat ${chatId} to:`);
+    });
+  };
+  info = async (): Promise<void> => {
+    this.bot.command('info', async (ctx) => {
+      const subscriptions = JSON.parse(fs.readFileSync(subsFile, 'utf-8'));
+      return ctx.reply(`✅ ${JSON.stringify(subscriptions, null, 2)}`, {});
+    });
+  };
+  scan = async (): Promise<void> => {
+    this.bot.command('scan', async (ctx) => {
+      this.handleCronEveryMinute();
+      return ctx.reply(`✅ Scan started`, {});
+    });
+  };
 }

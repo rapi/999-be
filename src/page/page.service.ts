@@ -6,12 +6,14 @@ import * as path from 'path';
 
 @Injectable()
 export class PageService {
-  public async getPage(categoryId: string): Promise<IPageItem[]> {
+  public async getPage(
+    categoryId: string,
+    filters?: Array<Record<string, string>>,
+  ): Promise<IPageItem[]> {
     const query = fs.readFileSync(
       path.join(process.cwd(), 'graphql', 'page.graphql'), // <- relative to the .js file
       'utf8',
     );
-    console.log('query', query);
     const data = await axios.post(
       'https://999.md/graphql',
       {
@@ -26,7 +28,7 @@ export class PageService {
             subCategoryId: categoryId,
             source: 'AD_SOURCE_DESKTOP',
             pagination: { limit: 500, skip: 0 },
-            filters: [],
+            filters: filters ?? [],
           },
           locale: 'ru_RU',
         },
