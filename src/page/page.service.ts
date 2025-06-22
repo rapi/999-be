@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IPageItem } from './IPageItem';
+import { IPage, IPageItem } from './IPageItem';
 import axios from 'axios';
 import * as fs from 'node:fs';
 import * as path from 'path';
@@ -9,7 +9,8 @@ export class PageService {
   public async getPage(
     categoryId: string,
     filters?: Array<Record<string, string>>,
-  ): Promise<IPageItem[]> {
+    page: number = 0,
+  ): Promise<IPage> {
     const query = fs.readFileSync(
       path.join(process.cwd(), 'graphql', 'page.graphql'), // <- relative to the .js file
       'utf8',
@@ -27,7 +28,7 @@ export class PageService {
           input: {
             subCategoryId: categoryId,
             source: 'AD_SOURCE_DESKTOP',
-            pagination: { limit: 500, skip: 0 },
+            pagination: { limit: 1000, skip: page * 1000 },
             filters: filters ?? [],
           },
           locale: 'ru_RU',
@@ -47,11 +48,6 @@ export class PageService {
           priority: 'u=1, i',
           'sec-ch-ua':
             '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-          'sec-ch-ua-mobile': '?0',
-          'sec-ch-ua-platform': '"macOS"',
-          'sec-fetch-dest': 'empty',
-          'sec-fetch-mode': 'cors',
-          'sec-fetch-site': 'same-origin',
           'sentry-trace': '8d9efb3f638549b6bf7b8143da33401d-8c4c6342dc616e68-0',
           source: 'desktop',
           cookie:
@@ -62,11 +58,12 @@ export class PageService {
         },
       },
     );
-
-    return data.data.data.searchAds.ads.map((add) => ({
+    const adds: IPageItem[] = data.data.data.searchAds.ads.map((add) => ({
       title: add.title,
       link: `https://999.md/ru/${add.id}`,
       userId: add.owner.id,
+      ...add,
     }));
+    return { adds, count: data.data.data.searchAds.count } as IPage;
   }
 }

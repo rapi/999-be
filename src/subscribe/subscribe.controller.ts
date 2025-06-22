@@ -74,12 +74,14 @@ export class SubscribeController implements OnModuleInit {
       const sub = subscription[chatId];
       const { link, filter } = sub;
       this.logger.debug(`Checking subscription for chat ${chatId}: ${link}`);
-      const adds = await this.pageService.getPage(
-        filter.subCategoryId,
-        filter.filters,
-      );
+      const addsFull = (
+        await this.pageService.getPage(filter.subCategoryId, filter.filters)
+      ).adds;
+      const adds = addsFull.map((add) => ({
+        link: add.link,
+        userId: add.userId,
+      }));
       const addsMap = Object.fromEntries(adds.map((item) => [item.link, item]));
-
       const newAds = adds.filter((item) => !oldAddsLinks.includes(item.link));
       fs.writeFileSync(
         cacheDir + '/' + chatId + '.json',
@@ -91,7 +93,17 @@ export class SubscribeController implements OnModuleInit {
       if (newAds.length > 0) {
         for (const sub of newAds) {
           try {
-            await this.bot.telegram.sendMessage(chatId, sub.link);
+            const currentAdd = addsFull.find(
+              (current) => current.link === sub.link,
+            );
+            await this.bot.telegram.sendMessage(
+              chatId,
+              `${currentAdd.title}\n${
+                currentAdd.price?.value?.value
+              } ${currentAdd.price?.value?.unit?.replace('UNIT_', '')}\n${
+                sub.link
+              }`,
+            );
           } catch (e) {
             this.logger.error(e);
           }
@@ -131,16 +143,38 @@ export class SubscribeController implements OnModuleInit {
         }),
         'utf8',
       );
-      const adds = await this.pageService.getPage(subcategory);
-      const addsMap = Object.fromEntries(adds.map((item) => [item.link, item]));
-      fs.writeFileSync(
-        cacheDir + '/' + chatId + '.json',
-        JSON.stringify(addsMap),
-        'utf-8',
-      );
+      let adds = [];
+      let page = 0;
+      let count = 0;
+      do {
+        const addsFull = await this.pageService.getPage(
+          subcategory,
+          [],
+          page++,
+        );
+        adds = addsFull.adds.map((add) => ({
+          link: add.link,
+          userId: add.userId,
+        }));
+        count = addsFull.count;
+        const addsMap = Object.fromEntries(
+          adds.map((item) => [item.link, item]),
+        );
+        let existingAdds = {};
+        if (fs.existsSync(cacheDir + '/' + chatId + '.json'))
+          existingAdds = JSON.parse(
+            fs.readFileSync(cacheDir + '/' + chatId + '.json', 'utf-8'),
+          );
+        fs.writeFileSync(
+          cacheDir + '/' + chatId + '.json',
+          JSON.stringify({ ...existingAdds, ...addsMap }),
+          'utf-8',
+        );
+      } while (page * 1000 < count);
+
       this.logger.log(`Chat ${chatId} subscribed to: ${decoded}`);
       return ctx.reply(
-        `✅ Subscribed chat ${chatId} to:\n${decoded}, on the page ${adds.length} adds found.`,
+        `✅ Subscribed chat ${chatId} to:\n${decoded}, on the page ${count} adds found.`,
       );
     });
   };

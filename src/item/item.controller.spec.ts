@@ -24,7 +24,7 @@ describe('ItemController', () => {
           link: userMap[users[i]].link,
         });
     }
-
+    console.log(ads);
     Object.values(ads)
       .sort((a, b) => b.userMarkCount - a.userMarkCount)
       .forEach((e, i) => console.log(i, e.link, e.userMark));
