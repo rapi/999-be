@@ -217,6 +217,7 @@ export class SubscribeController implements OnModuleInit {
   info = async (): Promise<void> => {
     this.bot.command('info', async (ctx) => {
       const subscriptions = JSON.parse(fs.readFileSync(subsFile, 'utf-8'));
+      this.logger.debug('Subscriptions info requested');
       return ctx.reply(`✅ ${JSON.stringify(subscriptions, null, 2)}`, {});
     });
   };
